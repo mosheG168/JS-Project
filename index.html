@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <h1>Task Manager</h1>
+    </header>
+
+    <main>
+        <div class="task-input">
+            <input type="text" id="task-text" placeholder="Enter task description" />
+            <input type="date" id="task-date" />
+            <button id="add-task">Add Task</button>
+        </div>
+
+        <div class="controls">
+            <div class="filters">
+                <button id="filter-all" class="active">All (<span class="task-count" data-filter="all">0</span>)</button>
+                <button id="filter-active">Active (<span class="task-count" data-filter="active">0</span>)</button>
+                <button id="filter-completed">Completed (<span class="task-count" data-filter="completed">0</span>)</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="sort">
+                <button id="sort-date">Sort by Date</button>
+            </div>
+        </div>
+
+        <ul id="task-list"></ul>
+        <p id="empty-message" class="hidden">Refresh the screen for new tasks! Or just add manualy...</p>
+    </main>
+
+    <footer>
+        <p>&copy;Moshe Green's Task Manager App</p>
+    </footer>
+
+</body>
+
+</html>

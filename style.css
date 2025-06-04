@@ -1,0 +1,353 @@
+@import url("https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+/** Here is the main CSS for the app */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Assistant", sans-serif;
+  background-color: #f5f7fa;
+}
+
+header,
+footer {
+  background-color: #4a90e2; /* 2563eb */
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-input {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.task-input input[type="text"],
+.task-input input[type="date"] {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s;
+}
+
+.task-input input:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+
+.task-input button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task-input button:hover {
+  background-color: #357ac8;
+}
+
+.task-input button:active {
+  transform: scale(0.98);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.controls .filters,
+.controls .sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.controls .filters button,
+.controls .sort button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background-color: #357ac8;
+}
+
+.controls .filters button.active {
+  background-color: #2ecc71;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+ul#task-list {
+  list-style: none;
+  padding: 0;
+}
+
+ul#task-list li {
+  background-color: #f9f9f9;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem;
+  border-left: 4px solid #4a90e2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+ul#task-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  background-color: #eef5ff;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+ul#task-list li.completed span {
+  text-decoration: line-through;
+  color: #5b5858;
+  background-color: #f7f7f7;
+}
+
+ul#task-list button {
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+ul#task-list .complete-btn {
+  background-color: #5cb85c;
+  color: white;
+}
+
+ul#task-list .delete-btn {
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 4px;
+}
+
+ul#task-list .delete-btn:hover {
+  background-color: #c9302c;
+}
+
+ul#task-list button:hover {
+  opacity: 0.9;
+}
+
+#empty-message {
+  text-align: center;
+  margin-top: 20px;
+  color: #888;
+  font-style: italic;
+}
+
+.hidden {
+  display: none;
+}
+
+input[type="checkbox"].complete-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #4a90e2;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"].complete-checkbox:hover {
+  background-color: #4ae25c;
+  border-color: #4ae25c;
+}
+
+input[type="checkbox"].complete-checkbox:checked {
+  background-color: #4ae25c;
+  border-color: #4ae25c;
+}
+
+input[type="checkbox"].complete-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.task-date {
+  font-size: 0.85rem;
+  color: var(--secondary);
+  color: #6b7280;
+}
+
+#task-list li {
+  transition: all 0.3s ease;
+}
+
+/** Media Queries for Responsiveness of the app */
+@media (max-width: 1200px) {
+  main {
+    max-width: 80%;
+  }
+}
+
+@media (max-width: 1024px) {
+  main {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  main {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .task-input {
+    flex-direction: column;
+  }
+
+  .task-input input[type="text"],
+  .task-input input[type="date"] {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .controls .filters,
+  .controls .sort {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .controls .filters button,
+  .controls .sort button {
+    flex: 1 1 45%;
+    max-width: 100%;
+    margin: 0.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .task-input input[type="text"],
+  .task-input input[type="date"] {
+    flex: 1 1 100%;
+  }
+
+  footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .controls .filters button,
+  .controls .sort button {
+    flex: 1 1 100%;
+  }
+
+  footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  header,
+  footer {
+    padding: 0.5rem 0;
+  }
+
+  footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+  }
+
+  main {
+    padding: 0.5rem;
+  }
+
+  .task-input input[type="text"],
+  .task-input input[type="date"],
+  .task-input button,
+  .controls .filters button,
+  .controls .sort button {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+
+  ul#task-list li {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
