@@ -18,6 +18,15 @@ flatpickr("#task-date", {
   disableMobile: true      
 });
 
+//* Function to get today's date in the correct format 
+function getTodayFormatted() {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const year = today.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
 //* Save tasks to localStorage
 function saveTasks(tasks) {
   const jsonString = JSON.stringify(tasks);
@@ -76,9 +85,15 @@ function filterTasks(tasks, filter) {
   }
 }
 
+//* Parse Date from D-M-Y format to Date object
+function parseDMY(dateStr) {
+  const [day, month, year] = dateStr.split("-");
+  return new Date(`${year}-${month}-${day}`);
+}
+
 //* Sort Tasks by Date 
 function sortTasks(tasks) {
-  return tasks.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+  return tasks.slice().sort((a, b) => parseDMY(a.date) - parseDMY(b.date));
 }
 
 function updateTaskCounts() {
@@ -292,7 +307,7 @@ async function fetchInitialTasks() {
     const convertedTasks = data.map(item => ({
       id: item.id,
       text: item.title,
-      date: new Date().toISOString().split('T')[0], 
+      date: getTodayFormatted(),
       completed: false
     }));
 
