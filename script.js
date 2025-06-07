@@ -1,5 +1,4 @@
 //* Task Manager Application Script:
-
 const taskList = document.getElementById("task-list");
 const addTaskBtn = document.getElementById("add-task");
 const taskTextInput = document.getElementById("task-text");
@@ -28,14 +27,12 @@ function getTasks() {
 function addTask() {
   const text = taskTextInput.value.trim();
   const dueDate = taskDateInput.value;
-
   if (text === '' || dueDate === '') //* Simple validation to check if inputs are empty..
     {
       alert("Please fill in both the task description and due date.");
       return;
     }
-
-  //! Check if the due date is valid!
+  //* Check if the due date is valid!
   const today = new Date();
   today.setHours(0, 0, 0, 0); //* Standart to ignore time.
   const selectedDate = new Date(dueDate);
@@ -51,7 +48,6 @@ function addTask() {
     date: dueDate,         
     completed: false        
   };
-
   tasks.push(newTask);
   saveTasks(tasks);
   renderTasks();    
@@ -72,7 +68,6 @@ function filterTasks(tasks, filter) {
       return tasks;
   }
 }
-
 
 //* Sort Tasks by Date 
 function sortTasks(tasks) {
@@ -102,52 +97,94 @@ function formatDate(dateString) {
 
 //* Check if the task list is empty or all tasks are completed (Helper function before fething tasks from API)
 function checkEmptyState() {
-  const tasks = document.querySelectorAll("#task-list li:not(.hidden)");
   const message = document.getElementById("empty-message");
-  const allChecked = [...tasks].every(li => li.querySelector("input").checked);
-  if (tasks.length === 0 || allChecked) {
-    message.classList.remove("hidden");
-  } else {
-    message.classList.add("hidden");
-  }
+  const total = tasks.length;
+  const activeCount = tasks.filter(t => !t.completed).length;
+  const completedCount = tasks.filter(t => t.completed).length;
+  let shouldShowMessage = false;
+
+  if (currentFilter === "active" && activeCount === 0) 
+    {
+      shouldShowMessage = true;
+    } 
+  else if (currentFilter === "completed" && completedCount === total && total > 0) 
+    {
+      shouldShowMessage = true;
+    } 
+  else if (currentFilter === "all" && (total === 0 || completedCount === total)) 
+    {
+      shouldShowMessage = true;
+    }
+
+  if (shouldShowMessage)  //* If no tasks are available or all tasks are completed so...
+    {
+      message.classList.remove("hidden");
+    } 
+  else 
+    {
+      message.classList.add("hidden");
+    }
 }
 
-
-//*  Render Tasks on Page (Main Function to display tasks)
+//*  Render Tasks on Page (Main Function of the program to display tasks)
 function renderTasks() {
   taskList.innerHTML = '';
   const filteredTasks = filterTasks(tasks, currentFilter);
   filteredTasks.forEach(task => {
-    const li = document.createElement("li");
-    li.className = task.completed ? "completed" : "";
-    li.innerHTML = `
-      <div class="task-content">
-        <span class="task-text">${task.text}</span>
-        <span class="task-date">Due: ${formatDate(task.date)}</span>
-      </div>
-      <div class="task-actions">
-        <input type="checkbox" class="complete-checkbox" data-id="${task.id}" ${task.completed ? 'checked' : ''} aria-label="Mark task as completed">
-        <button class="delete-btn" data-id="${task.id}" aria-label="Delete task">🗑️</button>
-      </div>
-    `;
+      const li = document.createElement("li");
+      li.className = task.completed ? "completed" : "";
+      li.innerHTML = `
+        <div class="task-content">
+          <span class="task-text" contenteditable="false" data-id="${task.id}">${task.text}</span>
+          <div class="task-info">
+            <button class="edit-btn" data-id="${task.id}" aria-label="Edit task">✏️</button>
+            <span class="due-label">Due By -</span>
+            <input type="text" class="date-picker" value="${task.date}" data-id="${task.id}">
+          </div>
+        </div>
+        <div class="task-actions">
+          <input type="checkbox" class="complete-checkbox" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
+          <button class="delete-btn" data-id="${task.id}">🗑️</button>
+        </div>
+      `;
     taskList.appendChild(li);
+    flatpickr(".date-picker", {
+      dateFormat: "d-m-Y",  
+      allowInput: true,
+      defaultDate: null,
+      onClose: function(selectedDates, dateStr, instance) {
+        const input = instance._input;
+        const id = Number(input.dataset.id);
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+        const selected = selectedDates[0];
+        const isoDate = selected.toISOString().split("T")[0]; 
+        if (task.date !== isoDate) 
+          {
+            task.date = isoDate;
+            saveTasks(tasks);
+            renderTasks();
+          }
+      }
   });
+});
 
   //* Checkbox Event 
   document.querySelectorAll(".complete-checkbox").forEach(checkbox => {
     checkbox.addEventListener("change", e => {
       const id = Number(e.target.dataset.id);
       const task = tasks.find(t => t.id === id);
-      if (task) {
-        task.completed = e.target.checked;
-        reorderTasks(); 
-        saveTasks(tasks);
-        renderTasks();
-      }
+      if (task) 
+        {
+          task.completed = e.target.checked;
+          reorderTasks();
+          saveTasks(tasks);
+          renderTasks();
+        }
     });
   });
 
-  //* Delete Event 
+  //* Delete Button for Tasks
   document.querySelectorAll(".delete-btn").forEach(button => {
     button.addEventListener("click", e => {
       const id = Number(e.target.dataset.id);
@@ -157,11 +194,53 @@ function renderTasks() {
     });
   });
 
-  updateActiveFilterButton(); // Highlight the correct filter button
+  //*  Edit Text Button inline 
+  document.querySelectorAll(".edit-btn").forEach(button => {
+    button.addEventListener("click", e => {
+      const id = Number(e.target.dataset.id);
+      const li = e.target.closest("li");
+      const textSpan = li.querySelector(".task-text");
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+
+      textSpan.contentEditable = "true";
+      textSpan.focus();
+
+      textSpan.addEventListener("blur", () => {
+        textSpan.contentEditable = "false";
+        task.text = textSpan.textContent.trim();
+        saveTasks(tasks);
+      });
+    });
+  });
+
+  //* Click on Date to Edit
+  document.querySelectorAll(".task-date").forEach(span => {
+    span.addEventListener("click", e => {
+      const id = Number(e.target.dataset.id);
+      const li = e.target.closest("li");
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+      const dateInput = li.querySelector(".editable-date");
+      const dateSpan = li.querySelector(".task-date");
+      dateSpan.classList.add("hidden");
+      dateInput.classList.remove("hidden");
+      dateInput.focus();
+      dateInput.addEventListener("blur", () => {
+        const newDate = dateInput.value;
+        if(newDate !== task.date) 
+          {
+            task.date = newDate;
+            saveTasks(tasks);
+          }
+        renderTasks();  
+      });
+    });
+  });
+  updateActiveFilterButton();
   updateTaskCounts();
   checkEmptyState();
 }
-
 
 //* Reorder Tasks (Helper function to keep unchecked tasks at the top and checked tasks at the bottom)
 function reorderTasks() {
@@ -170,7 +249,6 @@ function reorderTasks() {
   const checked = tasks.filter(t => t.completed).sort((a, b) => a.id - b.id);
   tasks = [...unchecked, ...checked];
 }
-
 
 //* Highlight Active Buttons
 function updateActiveFilterButton() {
@@ -192,7 +270,7 @@ function updateActiveFilterButton() {
     } 
 }
 
-//* Fetch Initial Tasks from API (Only if localStorage is empty or all tasks are completed) 
+//* Fetch Initial Tasks from API (Only if localStorage is empty or all tasks are completed!!) 
 async function fetchInitialTasks() {
   try {
     const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=5');
@@ -206,7 +284,7 @@ async function fetchInitialTasks() {
     const convertedTasks = data.map(item => ({
       id: item.id,
       text: item.title,
-      date: new Date().toISOString().split('T')[0], //* today's date
+      date: new Date().toISOString().split('T')[0], 
       completed: false
     }));
 
@@ -229,7 +307,7 @@ async function fetchInitialTasks() {
   }
 }
 
-//* Event Listeners for Buttons
+//* Event Listeners for Buttons:
 addTaskBtn.addEventListener("click", addTask);
 
 filterAllBtn.addEventListener("click", () => {
@@ -255,17 +333,18 @@ sortDateBtn.addEventListener("click", () => {
 
 //* Initial Load of Tasks
 //* Check if there are tasks in localStorage or if all tasks are completed so fetch from api:
-if (getTasks().length === 0 || getTasks().every(task => task.completed)) 
-  {  
-    tasks = []; 
-    renderTasks(); 
-    updateActiveFilterButton(); 
-    updateTaskCounts(); 
-    console.log("No tasks found in localStorage. Fetching sample tasks from API...");
-    fetchInitialTasks(); 
-  }
-else //* So Load tasks from localStorage
-  {
-    tasks = getTasks();  
-    renderTasks();
-  }
+const storedTasks = getTasks();
+const activeTasks = storedTasks.filter(task => !task.completed);
+const completedTasks = storedTasks.filter(task => task.completed);
+
+if (activeTasks.length === 0 || completedTasks.length === storedTasks.length) {
+  tasks = [];
+  renderTasks();
+  updateActiveFilterButton();
+  updateTaskCounts();
+  console.log("No active tasks or all tasks completed. Fetching sample tasks from API...");
+  fetchInitialTasks();
+} else {
+  tasks = storedTasks;
+  renderTasks();
+}
