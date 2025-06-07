@@ -112,8 +112,8 @@ function updateTaskCounts() {
 function formatDate(dateString) {
   const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-  const year = String(date.getFullYear()).slice(-2); // Get last two digits
+  const month = String(date.getMonth() + 1).padStart(2, '0'); 
+  const year = String(date.getFullYear()).slice(-2); 
   return `${day}/${month}/${year}`;
 }
 
@@ -170,27 +170,38 @@ function renderTasks() {
         </div>
       `;
     taskList.appendChild(li);
-    flatpickr(".date-picker", {
-      dateFormat: "d-m-Y",  
-      allowInput: true,
-      defaultDate: null,
-      disableMobile: true,
-      onClose: function(selectedDates, dateStr, instance) {
-        const input = instance._input;
-        const id = Number(input.dataset.id);
-        const task = tasks.find(t => t.id === id);
-        if (!task) return;
-        const selected = selectedDates[0];
-        const isoDate = selected.toISOString().split("T")[0]; 
-        if (task.date !== isoDate) 
-          {
-            task.date = isoDate;
-            saveTasks(tasks);
-            renderTasks();
+    document.querySelectorAll(".date-picker").forEach(input => {
+      const id = Number(input.dataset.id);
+      const task = tasks.find(t => t.id === id);
+      flatpickr(input, {
+        dateFormat: "d-m-Y",
+        allowInput: true,
+        disableMobile: true,
+        defaultDate: task.date,
+        minDate: "today", //* Prevent past dates just like in the add task input
+        onClose: function(selectedDates, dateStr, instance) {
+          const selected = selectedDates[0];
+          if (!selected) return;
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          selected.setHours(0, 0, 0, 0);
+          if (selected < today) 
+            {
+              alert("Stop thinking about the past!! Set a due-date for the future 🤘🏽");
+              return;
+            }
+          const formattedDate = `${String(selected.getDate()).padStart(2, '0')}-${String(selected.getMonth() + 1).padStart(2, '0')}-${selected.getFullYear()}`;
+          if (task.date !== formattedDate) 
+            {
+              task.date = formattedDate;
+              saveTasks(tasks);
+              renderTasks();
+            }
           }
-      }
-  });
+        });
+      });
 });
+
 
   //* Checkbox Event 
   document.querySelectorAll(".complete-checkbox").forEach(checkbox => {
