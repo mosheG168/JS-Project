@@ -369,13 +369,12 @@ input[type="checkbox"].complete-checkbox:checked::after {
     bottom: 0;
     width: 100%;
   }
-  
   .date-picker {
     max-width: 100%;
     width: 100%;
     font-size: 0.8rem;
   }
-  
+
   .task-footer {
     flex-direction: column;
     align-items: flex-start;
