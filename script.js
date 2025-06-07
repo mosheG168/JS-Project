@@ -51,7 +51,7 @@ function addTask() {
   //* Check if the due date is valid!
   const today = new Date();
   today.setHours(0, 0, 0, 0); //* Standart to ignore time.
-  const selectedDate = new Date(dueDate);
+  const selectedDate = parseDMY(dueDate);
   if (selectedDate < today) 
     {
       alert("Stop thinking about the past!! Set a due-date for the future 🤘🏽");
