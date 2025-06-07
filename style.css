@@ -373,7 +373,7 @@ input[type="checkbox"].complete-checkbox:checked::after {
   .date-picker {
     max-width: 100%;
     width: 100%;
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
   
   .task-footer {
