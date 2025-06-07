@@ -11,6 +11,13 @@ const sortDateBtn = document.getElementById("sort-date");
 let tasks = [];                //* placeholder for all task objects
 let currentFilter = "all";     //* default is set to "All".
 
+//* Flatpickr for the date input
+flatpickr("#task-date", {
+  dateFormat: "d-m-Y",      
+  allowInput: true,        
+  disableMobile: true      
+});
+
 //* Save tasks to localStorage
 function saveTasks(tasks) {
   const jsonString = JSON.stringify(tasks);
@@ -152,6 +159,7 @@ function renderTasks() {
       dateFormat: "d-m-Y",  
       allowInput: true,
       defaultDate: null,
+      disableMobile: true,
       onClose: function(selectedDates, dateStr, instance) {
         const input = instance._input;
         const id = Number(input.dataset.id);
